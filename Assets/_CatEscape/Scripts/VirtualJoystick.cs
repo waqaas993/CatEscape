@@ -19,6 +19,7 @@ namespace CatEscape.Input
         private void Update()
         {
             InputEditor();
+            InputMobile();
         }
 
         private void InputEditor()
@@ -45,6 +46,36 @@ namespace CatEscape.Input
             {
                 InputVector = Vector2.zero;
                 JoystickImage.rectTransform.anchoredPosition = Vector2.zero;
+            }
+        }
+
+        private void InputMobile()
+        {
+            if (UnityEngine.Input.touchCount > 0)
+            {
+                Touch touch = UnityEngine.Input.GetTouch(0);
+                switch (touch.phase)
+                {
+                    case TouchPhase.Began:
+                        transform.position = touch.position;
+                        break;
+                    case TouchPhase.Moved:
+                        Vector2 pos = touch.position - (Vector2)transform.position;
+                        pos.x = (pos.x / ImageBackground.rectTransform.sizeDelta.x);
+                        pos.y = (pos.y / ImageBackground.rectTransform.sizeDelta.y);
+                        InputVector = new Vector2(pos.x, pos.y) * 2f;
+                        if (InputVector.magnitude > 1)
+                        {
+                            transform.position = Vector3.Lerp(transform.position, touch.position, Time.deltaTime * 3);
+                            InputVector = InputVector.normalized;
+                        }
+                        JoystickImage.rectTransform.anchoredPosition = new Vector2(InputVector.x * (ImageBackground.rectTransform.sizeDelta.x * .5f),
+                                                                                 InputVector.y * (ImageBackground.rectTransform.sizeDelta.y * .5f));
+                        break;
+                    case TouchPhase.Ended:
+
+                        break;
+                }
             }
         }
     }
