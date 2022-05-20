@@ -1,5 +1,4 @@
 using UnityEngine;
-using DG.Tweening;
 using CatEscape.Input;
 
 namespace CatEscape.Game
@@ -13,7 +12,8 @@ namespace CatEscape.Game
         private void FixedUpdate()
         {
             Vector3 inputVector = new Vector3(VirtualJoystick.InputVector.x, 0, VirtualJoystick.InputVector.y);
-            Animator.SetFloat("input_magnitude", VirtualJoystick.InputVector.magnitude);
+            Animator.SetFloat("input_magnitude", inputVector.magnitude);
+            Animator.SetFloat("walk_speed", inputVector.magnitude * Speed);
 
             transform.forward = !inputVector.Equals(Vector3.zero) ? inputVector : transform.forward;
             transform.Translate(inputVector * Speed * Time.fixedDeltaTime, Space.World);
