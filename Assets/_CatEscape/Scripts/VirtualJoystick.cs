@@ -1,17 +1,12 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 
 namespace CatEscape.Input
 {
-    public class VirtualJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
+    public class VirtualJoystick : MonoBehaviour
     {
-
         public Image ImageBackground;
         public Image JoystickImage;
-        public bool IsPressed = false;
-
-        private Vector2 DefaultAnchoredPosition;
 
         private static Vector2 _InputVector;
 
@@ -21,51 +16,36 @@ namespace CatEscape.Input
             private set { _InputVector = value; }
         }
 
-
-        public void OnPointerDown(PointerEventData e)
+        private void Update()
         {
-            DefaultAnchoredPosition = ImageBackground.rectTransform.anchoredPosition;
-            Vector2 pos;
-            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(ImageBackground.rectTransform,
-                                                                e.position,
-                                                                e.pressEventCamera,
-                                                                out pos))
-            {
-                ImageBackground.rectTransform.anchoredPosition = new Vector2(ImageBackground.rectTransform.anchoredPosition.x + (pos.x / ImageBackground.rectTransform.sizeDelta.x) * 249, ImageBackground.rectTransform.anchoredPosition.y);
-            }
-            OnDrag(e);
+            InputEditor();
         }
 
-        public void OnDrag(PointerEventData e)
+        private void InputEditor()
         {
-            IsPressed = true;
-            Vector2 pos;
-            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(ImageBackground.rectTransform,
-                                                                        e.position,
-                                                                        e.pressEventCamera,
-                                                                        out pos))
+            if (UnityEngine.Input.GetMouseButtonDown(0))
             {
+                transform.position = UnityEngine.Input.mousePosition;
+            }
+            else if (UnityEngine.Input.GetMouseButton(0))
+            {
+                Vector2 pos = UnityEngine.Input.mousePosition - transform.position;
                 pos.x = (pos.x / ImageBackground.rectTransform.sizeDelta.x);
                 pos.y = (pos.y / ImageBackground.rectTransform.sizeDelta.y);
                 InputVector = new Vector2(pos.x, pos.y) * 2f;
-                InputVector = (InputVector.magnitude > 1) ? InputVector.normalized : InputVector;
+                if (InputVector.magnitude > 1)
+                {
+                    transform.position = Vector3.Lerp(transform.position, UnityEngine.Input.mousePosition, Time.deltaTime * 3);
+                    InputVector = InputVector.normalized;
+                }
                 JoystickImage.rectTransform.anchoredPosition = new Vector2(InputVector.x * (ImageBackground.rectTransform.sizeDelta.x * .5f),
                                                                          InputVector.y * (ImageBackground.rectTransform.sizeDelta.y * .5f));
             }
-        }
-
-        public void ResetJoystick()
-        {
-            IsPressed = false;
-            InputVector = Vector2.zero;
-        }
-
-        public void OnPointerUp(PointerEventData e)
-        {
-            IsPressed = false;
-            InputVector = Vector2.zero;
-            JoystickImage.rectTransform.anchoredPosition = Vector2.zero;
-            ImageBackground.rectTransform.anchoredPosition = DefaultAnchoredPosition;
+            else if (UnityEngine.Input.GetMouseButtonUp(0))
+            {
+                InputVector = Vector2.zero;
+                JoystickImage.rectTransform.anchoredPosition = Vector2.zero;
+            }
         }
     }
 }
