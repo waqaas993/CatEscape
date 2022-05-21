@@ -5786,7 +5786,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rigidbody: {fileID: 7249161855256430654}
   Animator: {fileID: 8575700113121086330}
-  Speed: 2.5
+  Speed: 4
 --- !u!1 &8575700113111742676
 GameObject:
   m_ObjectHideFlags: 0
