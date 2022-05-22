@@ -1,13 +1,35 @@
 using UnityEngine;
 using CatEscape.Input;
+using System;
 
 namespace CatEscape.Game
 {
     public class CatController : MonoBehaviour
     {
-        public Rigidbody Rigidbody;
         public Animator Animator;
+        [Header("Player Properties")]
+        [Tooltip("Walking speed of Player")]
         public float Speed;
+        [Tooltip("Health of Player")]
+        public float Health;
+
+        private void OnEnable()
+        {
+            NPC.Attacked += ReceiveDamage;
+        }
+
+        private void ReceiveDamage(GameObject attacker, GameObject victim, float damage)
+        {
+            if (gameObject.Equals(victim))
+            {
+                Health -= damage;
+                if (Health <= 0)
+                {
+                    //TODO: death
+                    Debug.Log("Died!");
+                }
+            }
+        }
 
         private void FixedUpdate()
         {
@@ -18,6 +40,11 @@ namespace CatEscape.Game
 
             transform.forward = !inputVector.Equals(Vector3.zero) ? inputVector : transform.forward;
             transform.Translate(inputVector * Speed * Time.fixedDeltaTime, Space.World);
+        }
+
+        private void OnDisable()
+        {
+            NPC.Attacked -= ReceiveDamage;
         }
     }
 }

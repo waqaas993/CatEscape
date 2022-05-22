@@ -9,6 +9,9 @@ namespace CatEscape.Game
         public static Action Fail;
         public static Action Complete;
 
-
+        private void Awake()
+        {
+            Begin?.Invoke();
+        }
     }
 }
