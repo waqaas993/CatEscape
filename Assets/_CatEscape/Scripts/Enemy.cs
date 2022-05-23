@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace CatEscape.Game
 {
-    enum State
+    public enum State
     {
         Idle,
         Tracking,
@@ -11,7 +11,7 @@ namespace CatEscape.Game
         Attacking,
         Waiting
     }
-    public class NPC : MonoBehaviour
+    public class Enemy : MonoBehaviour
     {
         public Animator Animator;
         [Header("NPC Properties")]
@@ -25,10 +25,12 @@ namespace CatEscape.Game
         private GameObject Target;
 
         private float _CurrentChargeTime;
-        private State CurrentState;
+        private State _CurrentState;
         private float CurrentChargeTime { get { return _CurrentChargeTime; } set { _CurrentChargeTime = value; } }
+        public State CurrentState { get => _CurrentState; private set { _CurrentState = value; } }
 
         public static Action<GameObject, GameObject, float> Attacked;
+        public static Action<State> StateChanged;
 
         private void OnEnable()
         {
@@ -61,9 +63,15 @@ namespace CatEscape.Game
         
         private void TrackTarget()
         {
+            Vector3 direction = Target.transform.position - transform.position;
+            direction = direction.normalized;
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(direction), Time.fixedDeltaTime * Speed * 2);
             CurrentChargeTime += Time.fixedDeltaTime;
             if (CurrentChargeTime > ChargeTime)
+            {
                 CurrentState = State.Following;
+                StateChanged?.Invoke(CurrentState);
+            }
         }
 
         private void FollowTarget()
@@ -78,7 +86,10 @@ namespace CatEscape.Game
             if (Target)
             {
                 if (Vector3.Distance(transform.position, Target.transform.position) < AttackDistance)
+                {
                     CurrentState = State.Attacking;
+                    StateChanged?.Invoke(CurrentState);
+                }
             }
         }
 
@@ -87,6 +98,7 @@ namespace CatEscape.Game
             Attacked?.Invoke(gameObject, Target, 100);
             Animator.SetTrigger("attack");
             CurrentState = State.Waiting;
+            StateChanged?.Invoke(CurrentState);
         }
 
         private void SetTracking(GameObject candidate, Type trigger) 
@@ -97,22 +109,22 @@ namespace CatEscape.Game
                 {
                     CurrentState = State.Tracking;
                     Target = candidate;
+                    StateChanged?.Invoke(CurrentState);
                 }
                 if (trigger.Equals(Type.Left))
                 {
                     ResetToIdle();
                 }
             }
-
         }
 
-
         /// <summary>
-        /// This function is specified as an event in NPC attack animation
+        /// This function is marked as an event in NPC attack animation
         /// </summary>
         public void ResetToIdle()
         {
             CurrentState = State.Idle;
+            StateChanged?.Invoke(CurrentState);
         }
 
         private void OnDisable()

@@ -52,9 +52,9 @@ namespace CatEscape.Game
             screenToShow.GetComponent<CanvasGroup>().DOFade(1, TransitionTime);
         }
 
-        public void OnClickPlay()
+        public void OnClickPlay(string url)
         {
-            //TODO: Re-direct to store link
+            Application.OpenURL(url);
         }
 
         private void OnDisable()

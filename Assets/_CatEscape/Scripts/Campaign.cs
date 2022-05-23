@@ -9,9 +9,25 @@ namespace CatEscape.Game
         public static Action Fail;
         public static Action Complete;
 
-        private void Awake()
+        private void OnEnable()
+        {
+            Player.Died += PlayerDied;
+        }
+        
+        private void Start()
         {
             Begin?.Invoke();
         }
+
+        private void PlayerDied()
+        {
+            Fail?.Invoke();
+        }
+
+        private void OnDisable()
+        {
+            Player.Died -= PlayerDied;
+        }
+
     }
 }
