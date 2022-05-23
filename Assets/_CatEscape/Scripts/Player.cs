@@ -33,6 +33,8 @@ namespace CatEscape.Game
         private void CampaignConcluded()
         {
             CanPlay = false;
+            Animator.SetFloat("input_magnitude", 0);
+            Animator.SetFloat("walk_speed", 0);
         }
 
         private void ReceiveDamage(GameObject attacker, GameObject victim, float damage)

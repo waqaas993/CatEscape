@@ -17,7 +17,7 @@ namespace CatEscape.Game
 
         private void EnemyChangedState(State state)
         {
-            if ((state.Equals(State.Following) || state.Equals(State.Tracking)))
+            if (state.Equals(State.Following) || state.Equals(State.Tracking))
             {
                 if (Coroutine == null)
                 {

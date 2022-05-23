@@ -12,9 +12,15 @@ namespace CatEscape.Game
         private void OnEnable()
         {
             Player.Died += PlayerDied;
+            NPC.MetTarget += ObjectiveCompleted;
         }
         
         private void Start()
+        {
+            Invoke("StartCampaign", 4);
+        }
+
+        private void StartCampaign()
         {
             Begin?.Invoke();
         }
@@ -24,9 +30,15 @@ namespace CatEscape.Game
             Fail?.Invoke();
         }
 
+        private void ObjectiveCompleted()
+        {
+            Complete?.Invoke();
+        }
+
         private void OnDisable()
         {
             Player.Died -= PlayerDied;
+            NPC.MetTarget -= ObjectiveCompleted;
         }
 
     }
